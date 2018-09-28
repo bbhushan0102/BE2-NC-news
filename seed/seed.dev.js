@@ -1,9 +1,10 @@
 const seedDB = require("./seed");
 const mongoose = require("mongoose");
+const DB_URL = require("../config");
 const data = require("./devData");
 return mongoose
   .connect(
-    "mongodb://localhost:27017/nc-news",
+    DB_URL,
     { useNewUrlParser: true }
   )
   .then(() => {

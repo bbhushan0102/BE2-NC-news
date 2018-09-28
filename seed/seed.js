@@ -22,7 +22,7 @@ const seedDB = ({ userData, articleData, commentData, topicData }) => {
         userDocs,
         topicDocs,
         Article.insertMany(
-          formatArticleData(articleData, userRefObj, topicDocs)
+        formatArticleData(articleData, userRefObj, topicDocs)
         )
       ]);
     })
@@ -33,7 +33,7 @@ const seedDB = ({ userData, articleData, commentData, topicData }) => {
         topicDocs,
         articleDocs,
         Comment.insertMany(
-          formatCommentData(commentData, articleDocs, userRefObj)
+        formatCommentData(commentData, articleDocs, userRefObj)
         )
       ]);
     });
