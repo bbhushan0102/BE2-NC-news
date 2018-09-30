@@ -2,10 +2,28 @@ const { Article, Comment, Topic } = require("../models");
 
 const getAllArticles = (req, res, next) => {
   Article.find()
+    .populate("created_by", "-__v")
+    .lean()
     .then(articles => {
-      res.status(200).send({ articles });
+      return Promise.all([
+        articles,
+        ...articles.map(article => {
+          const commentCount = Comment.count({ belongs_to: article._id });
+          return commentCount;
+        })
+      ]);
     })
-    .catch(next);
+    .then(([articles, ...commentCount]) => {
+      return Promise.all([
+        articles.map((article, index) => {
+          return { ...article, comments: commentCount[index] };
+        })
+      ])
+        .then(([articles]) => {
+          res.status(200).send({ articles });
+        })
+        .catch(next);
+    });
 };
 
 const getArticleById = (req, res, next) => {
@@ -51,31 +69,45 @@ const addCommentByArticleID = (req, res, next) => {
     })
     .catch(next);
 };
-
 const getArticlesByTopic = (req, res, next) => {
   const { topic_slug } = req.params;
   Article.find({ belongs_to: topic_slug })
-    .populate("created_by")
+    .populate("created_by", "-__v")
     .lean()
     .then(articles => {
-      if (articles.length === 0)
-        throw { msg: "404 page not found", status: 404 };
-      res.status(200).send({ articles });
+      return Promise.all([
+        articles,
+        ...articles.map(article => {
+          const commentCount = Comment.count({ belongs_to: article._id });
+          return commentCount;
+        })
+      ]);
+    })
+    .then(([articles, ...commentCount]) =>
+      articles.map((article, i) => {
+        return { ...article, comments: commentCount[i] };
+      })
+    )
+    .then(topicArticles => {
+      if (!topicArticles.length)
+        throw { msg: "topic does not exist", status: 404 };
+      res.status(200).send({ topicArticles });
     })
     .catch(next);
 };
 
 const postArticleByTopic = (req, res, next) => {
-  const { topic_slug } = req.params;
-  const newArticle = req.body;
-  newArticle.belongs_to = topic_slug;
-
+  const { topic_slug } = req.params
+  const newArticle = req.body
+  newArticle.belongs_to = topic_slug
   Article.create(newArticle)
-    .then(article => {
-      res.status(201).send({ article });
+    .then(article1 => {
+      const article = { ...article1._doc, comments: 0, __v: undefined }
+      res.status(201).send({ article })
     })
-    .catch(next);
+    .catch(next)
 };
+
 
 const changeArticleVote = (req, res, next) => {
   const { article_id } = req.params;

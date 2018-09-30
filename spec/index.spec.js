@@ -24,8 +24,9 @@ describe("/api", function() {
         .expect(200)
         .then(res => {
           expect(res.body.articles).to.be.an("array");
-          // res.body.articles[0];
           expect(res.body.articles.length).to.equal(articles.length);
+          expect(res.body.articles[0].comments).to.equal(2);
+          expect(res.body.articles[0]).to.haveOwnProperty("comments");
           expect(res.body.articles[0]).to.include.keys(
             "title",
             "body",
@@ -34,7 +35,8 @@ describe("/api", function() {
             "created_at",
             "_id",
             "votes",
-            "__v"
+            "__v",
+            "comments"
           );
         });
     });
@@ -60,7 +62,7 @@ describe("/api", function() {
           expect(res.body.article._id);
         });
     });
-    it("Get returns an error 404 if comment id does not exist", () => {
+    it("Get returns an error 404 if article id does not exist", () => {
       return request
         .get(`/api/articles/${mongoose.Types.ObjectId()}`)
         .expect(404)
@@ -124,6 +126,15 @@ describe("/api", function() {
           expect(res.body.comments.length).to.equal(2);
         });
     });
+    it("Get returns an error 404 if article id does not exist", () => {
+      return request
+        .get(`/api/articles/${mongoose.Types.ObjectId()}/comments`)
+        .expect(404)
+        .then(res => {
+          expect(res.body.msg).to.equal("404 page not found");
+        });
+    });
+
     it("POST a comment for article id and return a 201 status", () => {
       return request
         .post(`/api/articles/${articles[0]._id}/comments`)
@@ -138,12 +149,41 @@ describe("/api", function() {
           expect(res.body.comment.body).to.equal(
             "This is my new article content"
           );
-          // expect(res.body.comment.created_by).to.equal("bharat");
+        });
+    });
+    it("POST returns a 400 status and error message when the new object is empty", () => {
+      return request
+        .post(`/api/articles/${articles[0]._id}/comments`)
+        .send({})
+        .expect(400)
+        .then(res => {
+          expect(res.body.msg).to.equal(
+            "comments validation failed: created_by: Path `created_by` is required., body: Path `body` is required."
+          );
         });
     });
   });
 
-  describe("/api/topics/topic_slug/articles", () => {
+  //start here''''''
+  describe("/api/topics", () => {
+    it("GET returns object with topic array and returns a 200 status", () => {
+      return request
+        .get("/api/topics/")
+        .expect(200)
+        .then(res => {
+          expect(res.body.topics).to.have.length(2);
+          expect(res.body.topics).to.be.an("array");
+          expect(res.body.topics[0]).to.include.keys(
+            "_id",
+            "title",
+            "slug",
+            "__v"
+          );
+        });
+    });
+  });
+
+  describe("/api/topics/:topic_slug/articles", () => {
     it("POST new Article to a topic and return 201 status successfully added", () => {
       return request
         .post(`/api/topics/mitch/articles`)
@@ -156,17 +196,28 @@ describe("/api", function() {
         .expect(201)
         .then(res => {
           expect(res.body.article.title).to.equal("new article");
+          expect(res.body.article.comments).to.equal(0);
+          expect(res.body.article).to.include.keys(
+            "votes",
+            "_id",
+            "comments",
+            "title",
+            "body",
+            "belongs_to",
+            "created_by"
+          );
         });
     });
   });
   describe("api/topics/:topic_slug/articles", () => {
-    it("GET return all the articles for a certain topic ", () => {
+    it("GET returns all articles for a certain topic", () => {
       return request
         .get("/api/topics/mitch/articles")
         .expect(200)
         .then(res => {
-          expect(res.body.articles).to.be.an("array");
-          expect(res.body.articles).to.have.length(2);
+          expect(res.body.topicArticles).to.be.an("array");
+          expect(res.body.topicArticles).to.have.length(2);
+          expect(res.body.topicArticles[0]).to.haveOwnProperty("comments");
         });
     });
     it("GET returns a status 404 when an invalid topic is requested", () => {
@@ -222,4 +273,28 @@ describe("/api", function() {
         });
     });
   });
+  describe("/users/:username", () => {
+    it("GET Returns a JSON object with the profile data for the specified user", () => {
+      return request
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(res => {
+          expect(res.body.user[0]).to.include.keys(
+            "username",
+            "name",
+            "avatar_url"
+          );
+        });
+    });
+    it("GET user that doesnt exist returns an error message and a 404 status", () => {
+      return request
+        .get(`/api/users/${mongoose.Types.ObjectId()}`)
+        .expect(404)
+        .then(res => {
+          expect(res.body.msg).to.equal("404 page not found");
+        });
+    });
+  });
 });
+
+//});
