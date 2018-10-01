@@ -2,11 +2,11 @@
   "name": "northcoders-news-api",
   "version": "1.0.0",
   "description": "Northcoders News API Sprint",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "mocha spec",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node listen.js",
+    "dev": "nodemon listen.js"
   },
   "author": "",
   "license": "ISC",
