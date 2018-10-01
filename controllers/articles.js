@@ -2,7 +2,7 @@ const { Article, Comment, Topic } = require("../models");
 
 const getAllArticles = (req, res, next) => {
   Article.find()
-    .populate("created_by", "-__v")
+    .populate("created_by")
     .lean()
     .then(articles => {
       return Promise.all([
@@ -72,7 +72,7 @@ const addCommentByArticleID = (req, res, next) => {
 const getArticlesByTopic = (req, res, next) => {
   const { topic_slug } = req.params;
   Article.find({ belongs_to: topic_slug })
-    .populate("created_by", "-__v")
+    .populate("created_by")
     .lean()
     .then(articles => {
       return Promise.all([
@@ -84,8 +84,8 @@ const getArticlesByTopic = (req, res, next) => {
       ]);
     })
     .then(([articles, ...commentCount]) =>
-      articles.map((article, i) => {
-        return { ...article, comments: commentCount[i] };
+      articles.map((article, index) => {
+        return { ...article, comments: commentCount[index] };
       })
     )
     .then(topicArticles => {
@@ -97,17 +97,16 @@ const getArticlesByTopic = (req, res, next) => {
 };
 
 const postArticleByTopic = (req, res, next) => {
-  const { topic_slug } = req.params
-  const newArticle = req.body
-  newArticle.belongs_to = topic_slug
+  const { topic_slug } = req.params;
+  const newArticle = req.body;
+  newArticle.belongs_to = topic_slug;
   Article.create(newArticle)
     .then(article1 => {
-      const article = { ...article1._doc, comments: 0, __v: undefined }
-      res.status(201).send({ article })
+      const article = { ...article1._doc, comments: 0, __v: undefined };
+      res.status(201).send({ article });
     })
-    .catch(next)
+    .catch(next);
 };
-
 
 const changeArticleVote = (req, res, next) => {
   const { article_id } = req.params;

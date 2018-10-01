@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const { DB_URL } = require("./config");
 const bodyParser = require("body-parser");
 
-app.use(bodyParser.json(), express.static("public"));
+app.use(bodyParser.json(), express.static("views"));
 
 mongoose
   .connect(
@@ -18,6 +18,9 @@ mongoose
   .catch();
 
 app.use("/api", apiRouter);
+app.get("/", (req, res, next) => {
+  res.sendFile("index.html");
+});
 
 app.use("/*", (req, res, next) => {
   next({ status: 404 });
