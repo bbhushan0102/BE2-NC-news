@@ -53,7 +53,7 @@ Individual tests can be run using '.only' after 'describe' or after 'it'.
 
 ## Deployment
 
-This database has been deployed on heroku and can be found here:
+This database has been deployed on heroku and can be found here: https://northcodernews.herokuapp.com/
 
 ## Authors
 

@@ -102,7 +102,7 @@ const postArticleByTopic = (req, res, next) => {
   newArticle.belongs_to = topic_slug;
   Article.create(newArticle)
     .then(article1 => {
-      const article = { ...article1._doc, comments: 0, __v: undefined };
+      const article = { ...article1._doc};
       res.status(201).send({ article });
     })
     .catch(next);
