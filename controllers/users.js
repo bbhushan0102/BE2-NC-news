@@ -12,7 +12,7 @@ const getUserByUserName = (req, res, next) => {
   User.find({ username: username })
     .then(user => {
       if (user.length === 0) throw { msg: "user does not exist", status: 404 };
-      res.status(200).send({ user });
+      res.status(200).send({ user: user[0] });
     })
     .catch(next);
 };
