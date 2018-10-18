@@ -65,6 +65,11 @@ const addCommentByArticleID = (req, res, next) => {
   newComment.belongs_to = article_id;
   Comment.create(newComment)
     .then(comment => {
+      return Comment.findById(comment._id)
+        .populate("created_by")
+        .populate("belongs_to");
+    })
+    .then(comment => {
       res.status(201).send({ comment });
     })
     .catch(next);
