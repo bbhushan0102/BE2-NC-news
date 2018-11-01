@@ -2,13 +2,13 @@ const express = require("express");
 const app = express();
 const apiRouter = require("./routes/api");
 const mongoose = require("mongoose");
-const { DB_URL } = process.env || require("./config");
+const { DB_URL } = require("./config");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 app.use(cors());
 
 app.use(bodyParser.json(), express.static("views"));
-
+console.log(DB_URL);
 mongoose
   .connect(
     DB_URL,
