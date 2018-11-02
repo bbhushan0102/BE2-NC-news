@@ -183,7 +183,7 @@ describe("/api", function() {
     });
   });
 
-  describe("/api/topics/:topic_slug/articles", () => {
+  describe.only("/api/topics/:topic_slug/articles", () => {
     it("POST new Article to a topic and return 201 status successfully added", () => {
       return request
         .post(`/api/topics/mitch/articles`)
@@ -195,16 +195,18 @@ describe("/api", function() {
         })
         .expect(201)
         .then(res => {
+          console.log("res", res.body);
           expect(res.body.article.title).to.equal("new article");
-          expect(res.body.article.comments).to.equal(0);
+          // expect(res.body.article.comments).to.equal(0);
           expect(res.body.article).to.include.keys(
             "votes",
             "_id",
-            "comments",
             "title",
             "body",
             "belongs_to",
-            "created_by"
+            "created_at",
+            "created_by",
+            "__v"
           );
         });
     });
