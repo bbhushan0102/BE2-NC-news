@@ -1,4 +1,4 @@
-const { Article, Comment, Topic } = require("../models");
+const { Article, Comment, Topic, User } = require("../models");
 
 const getAllArticles = (req, res, next) => {
   Article.find()
@@ -107,8 +107,9 @@ const postArticleByTopic = (req, res, next) => {
   newArticle.belongs_to = topic_slug;
   Article.create(newArticle)
     .then(article => {
-      User.findById(article.created_by).then(user => {
-        const newArticle = { ...article, created_by: user };
+      // console.log(article._doc.created_by);
+      User.findOne({ _id: article._doc.created_by }).then(user => {
+        const newArticle = { ...article._doc, created_by: user };
         return res.status(201).send({ newArticle });
       });
     })
