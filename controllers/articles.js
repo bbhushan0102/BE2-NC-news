@@ -107,7 +107,10 @@ const postArticleByTopic = (req, res, next) => {
   newArticle.belongs_to = topic_slug;
   Article.create(newArticle)
     .then(article => {
-      return res.status(201).send({ article });
+      User.findById(article.created_by).then(user => {
+        const newArtcile = { ...article, created_by: user };
+        return res.status(201).send({ newArticle });
+      });
     })
     .catch(next);
 };
