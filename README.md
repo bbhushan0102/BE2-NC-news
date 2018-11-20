@@ -36,7 +36,7 @@ The file should export the value of DB_URL depending on the process.env.NODE_ENV
 
 Run 'npm run seed:dev' to seed the development database
 
-### Testing
+
 
 When testing, the index.spec.js file will automatically set NODE_ENV to test, and will re-seed the database before each test.
 
