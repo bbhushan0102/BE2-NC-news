@@ -57,4 +57,4 @@ This database has been deployed on heroku and can be found here: https://northco
 
 ## Authors
 
-Bharat
+Bharat Bhushan
