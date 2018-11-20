@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const TopicSchema = new Schema({
   title: {
@@ -9,7 +9,8 @@ const TopicSchema = new Schema({
   slug: {
     type: String,
     lowercase: true,
-    required: true
+    required: true,
+    unique: true
   }
 });
 
